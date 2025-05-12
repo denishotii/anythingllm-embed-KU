@@ -1,5 +1,6 @@
 import AnythingLLMIcon from "@/assets/anything-llm-icon.svg";
 import ChatService from "@/models/chatService";
+import { detectLanguage, getLanguageLabels } from "@/utils/language";
 import {
   ArrowCounterClockwise,
   Check,
@@ -20,6 +21,8 @@ export default function ChatWindowHeader({
   const [showingOptions, setShowOptions] = useState(false);
   const menuRef = useRef();
   const buttonRef = useRef();
+  const language = detectLanguage();
+  const labels = getLanguageLabels(language);
 
   const handleChatReset = async () => {
     await ChatService.resetEmbedChatSession(settings, sessionId);
@@ -83,12 +86,13 @@ export default function ChatWindowHeader({
         resetChat={handleChatReset}
         sessionId={sessionId}
         menuRef={menuRef}
+        labels={labels}
       />
     </div>
   );
 }
 
-function OptionsMenu({ settings, showing, resetChat, sessionId, menuRef }) {
+function OptionsMenu({ settings, showing, resetChat, sessionId, menuRef, labels }) {
   if (!showing) return null;
   return (
     <div
@@ -100,15 +104,15 @@ function OptionsMenu({ settings, showing, resetChat, sessionId, menuRef }) {
         className="hover:allm-cursor-pointer allm-bg-white allm-gap-x-[12px] hover:allm-bg-gray-100 allm-rounded-lg allm-border-none allm-flex allm-items-center allm-text-base allm-text-[#7A7D7E] allm-font-bold allm-px-4"
       >
         <ArrowCounterClockwise size={24} />
-        <p className="allm-text-[14px]">Reset Chat</p>
+        <p className="allm-text-[14px]">{labels.resetChat}</p>
       </button>
-      <ContactSupport email={settings.supportEmail} />
-      <SessionID sessionId={sessionId} />
+      <ContactSupport email={settings.supportEmail} labels={labels} />
+      <SessionID sessionId={sessionId} labels={labels} />
     </div>
   );
 }
 
-function SessionID({ sessionId }) {
+function SessionID({ sessionId, labels }) {
   if (!sessionId) return null;
 
   const [sessionIdCopied, setSessionIdCopied] = useState(false);
@@ -123,7 +127,7 @@ function SessionID({ sessionId }) {
     return (
       <div className="hover:allm-cursor-pointer allm-bg-white allm-gap-x-[12px] hover:allm-bg-gray-100 allm-rounded-lg allm-border-none allm-flex allm-items-center allm-text-base allm-text-[#7A7D7E] allm-font-bold allm-px-4">
         <Check size={24} />
-        <p className="allm-text-[14px] allm-font-sans">Copied!</p>
+        <p className="allm-text-[14px] allm-font-sans">{labels.copied}</p>
       </div>
     );
   }
@@ -134,12 +138,12 @@ function SessionID({ sessionId }) {
       className="hover:allm-cursor-pointer allm-bg-white allm-gap-x-[12px] hover:allm-bg-gray-100 allm-rounded-lg allm-border-none allm-flex allm-items-center allm-text-base allm-text-[#7A7D7E] allm-font-bold allm-px-4"
     >
       <Copy size={24} />
-      <p className="allm-text-[14px]">Session ID</p>
+      <p className="allm-text-[14px]">{labels.sessionId}</p>
     </button>
   );
 }
 
-function ContactSupport({ email = null }) {
+function ContactSupport({ email = null, labels }) {
   if (!email) return null;
 
   const subject = `Inquiry from ${window.location.origin}`;
@@ -149,7 +153,7 @@ function ContactSupport({ email = null }) {
       className="allm-no-underline hover:allm-underline hover:allm-cursor-pointer allm-bg-white allm-gap-x-[12px] hover:allm-bg-gray-100 allm-rounded-lg allm-border-none allm-flex allm-items-center allm-text-base allm-text-[#7A7D7E] allm-font-bold allm-px-4"
     >
       <Envelope size={24} />
-      <p className="allm-text-[14px] allm-font-sans">Email Support</p>
+      <p className="allm-text-[14px] allm-font-sans">{labels.emailSupport}</p>
     </a>
   );
 }
