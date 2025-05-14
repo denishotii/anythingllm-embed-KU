@@ -9,7 +9,16 @@ export const enLabels = {
   animation: {
     botName: "KUala-Bot",
     message: "Hello! Need help navigating KU?"
-  }
+  },
+  speechBubble: {
+    greeting: "Hello, I'm KUala-Bot.",
+    messages: [
+      "Got a question about studying at KU?",
+      "Ask me anything about the KU campus!",
+      "Let's make studying simpler!",
+      "I'm here to support your KU journey!",
+    ]
+  },
 };
 
 export const deLabels = {
@@ -23,5 +32,14 @@ export const deLabels = {
   animation: {
     botName: "KUala-Bot",
     message: "Hallo! Brauchen Sie Hilfe bei der Navigation durch die KU?"
-  }
+  },
+  speechBubble: {
+    greeting: "Hallo, ich bin KUala-Bot.",
+    messages: [
+      "Fragen zum Studium an der KU?",
+      "Frag mich etwas zum KU-Campus!",
+      "Lass uns das Studium einfacher machen!",
+      "Ich begleite dich durch dein KU-Studium!",
+    ]
+  },
 }; 

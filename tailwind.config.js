@@ -81,7 +81,9 @@ export default {
         ]
       },
       animation: {
-        sweep: "sweep 0.5s ease-in-out"
+        sweep: "sweep 0.5s ease-in-out",
+        'bounce-subtle': 'bounce-subtle 0.6s ease-in-out infinite',
+        'shadow-bounce': 'shadow-bounce 0.6s ease-in-out infinite',
       },
       keyframes: {
         sweep: {
@@ -95,6 +97,18 @@ export default {
         fadeOut: {
           "0%": { opacity: 1 },
           "100%": { opacity: 0 }
+        },
+        'bounce-subtle': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-6px)' }
+        },
+        'shadow-bounce': {
+          '0%, 100%': { 
+            transform: 'translateX(-50%) scale(1)'
+          },
+          '50%': { 
+            transform: 'translateX(-50%) scale(0.85)'
+          }
         }
       }
     }
