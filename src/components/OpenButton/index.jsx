@@ -9,15 +9,82 @@ import { detectLanguage, getLanguageLabels } from "../../utils/language";
 export default function OpenButton({ settings, isOpen, toggleOpen }) {
   const [showIntro, setShowIntro] = useState(false);
   const [showBubble, setShowBubble] = useState(false);
-  const [showTyping, setShowTyping] = useState(true);
+  const [showTyping, setShowTyping] = useState(false);
+  const [showPostTypingWiggle, setShowPostTypingWiggle] = useState(false);
+  const [showHalo, setShowHalo] = useState(false);
+  const [showHoverHalo, setShowHoverHalo] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [fadeBubble, setFadeBubble] = useState(false);
   const [isIdleJumping, setIsIdleJumping] = useState(false);
+  const [showEntranceAnimation, setShowEntranceAnimation] = useState(true);
   const language = detectLanguage();
   const labels = getLanguageLabels(language);
   const [currentMessage, setCurrentMessage] = useState(labels.speechBubble.greeting);
   const idleJumpIntervalRef = useRef(null);
   const idleMessageIntervalRef = useRef(null);
+
+  // Entrance animation effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowEntranceAnimation(false);
+      // Start typing animation after fly-in completes
+      setShowTyping(true);
+      setShowBubble(true);
+    }, 1500); // Animation duration
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Stop typing and start post-typing wiggle after 1.5s
+  useEffect(() => {
+    if (showTyping) {
+      const timer = setTimeout(() => {
+        setShowTyping(false);
+        setShowPostTypingWiggle(true);
+        setShowHalo(true);
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showTyping]);
+
+  // Stop post-typing wiggle and halo after 3s
+  useEffect(() => {
+    if (showPostTypingWiggle) {
+      const timer = setTimeout(() => {
+        setShowPostTypingWiggle(false);
+        // Remove halo before animation completes
+        setTimeout(() => setShowHalo(false), 1500);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showPostTypingWiggle]);
+
+  // Fade away after 10s
+  useEffect(() => {
+    if (showBubble && !showTyping) {
+      const timer = setTimeout(() => {
+        setFadeBubble(true);
+        setTimeout(() => setShowBubble(false), 500);
+      }, 10000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showBubble, showTyping]);
+
+  // Handle hover halo animation
+  useEffect(() => {
+    if (isHovered) {
+      setShowHoverHalo(true);
+    } else {
+      // Small delay before removing halo to allow animation to complete
+      const timer = setTimeout(() => {
+        setShowHoverHalo(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isHovered]);
 
   const getRandomMessage = useCallback(() => {
     const messages = labels.speechBubble.messages;
@@ -32,10 +99,18 @@ export default function OpenButton({ settings, isOpen, toggleOpen }) {
     setShowTyping(true);
     setFadeBubble(false);
     
-    // Stop typing after 1.5s
+    // Stop typing and start post-typing wiggle after 1.5s
     setTimeout(() => {
       setShowTyping(false);
+      setShowPostTypingWiggle(true);
+      setShowHalo(true);
     }, 1500);
+
+    // Stop post-typing wiggle and halo after 3s
+    setTimeout(() => {
+      setShowPostTypingWiggle(false);
+      setTimeout(() => setShowHalo(false), 3000);
+    }, 4500);
 
     // Fade away after 10s
     setTimeout(() => {
@@ -50,24 +125,6 @@ export default function OpenButton({ settings, isOpen, toggleOpen }) {
     setIsIdleJumping(true);
     setTimeout(() => setIsIdleJumping(false), 2000); // Stop jumping after 2s
   }, [isOpen, showBubble]);
-
-  // Initial animation sequence
-  useEffect(() => {
-    const timer1 = setTimeout(() => setShowBubble(true), 0);
-    const timer2 = setTimeout(() => setShowTyping(false), 1500);
-    
-    // Fade away after 20 seconds
-    const timer3 = setTimeout(() => {
-      setFadeBubble(true);
-      setTimeout(() => setShowBubble(false), 500);
-    }, 20000);
-
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
-    };
-  }, []);
 
   // Set up idle animations
   useEffect(() => {
@@ -102,7 +159,9 @@ export default function OpenButton({ settings, isOpen, toggleOpen }) {
         fade={fadeBubble}
       />
       <ContrastCheck>
-        <div className="allm-relative allm-flex allm-flex-col allm-items-center">
+        <div className={`allm-relative allm-flex allm-flex-col allm-items-center ${
+          showEntranceAnimation ? 'allm-animate-fly-in' : ''
+        }`}>
           <button
             id="anything-llm-embed-chat-button"
             onClick={toggleOpen}
@@ -113,13 +172,22 @@ export default function OpenButton({ settings, isOpen, toggleOpen }) {
             }`}
             aria-label="Toggle Menu"
           >
-            <img 
-              src={superKuala} 
-              alt="KU Mascot" 
-              className={`allm-w-[100px] allm-h-[100px] allm-object-contain ${
-                showTyping ? ' allm-animate-wiggle' : ''
-              } ${isHovered || isIdleJumping ? 'allm-animate-bounce-subtle' : ''}`}
-            />
+            <div className="allm-relative allm-w-[100px] allm-h-[100px]">
+              {(showHalo || showHoverHalo) && (
+                <div className={`allm-absolute allm-inset-[-10px] allm-bg-[#00aac3] allm-opacity-0 allm-rounded-full ${
+                  showHoverHalo ? 'allm-animate-halo-hover' : 'allm-animate-halo'
+                }`} />
+              )}
+              <img 
+                src={superKuala} 
+                alt="KU Mascot" 
+                className={`allm-w-[100px] allm-h-[100px] allm-object-contain allm-relative allm-z-10 ${
+                  showTyping ? 'allm-animate-wiggle' : ''
+                } ${showPostTypingWiggle ? 'allm-animate-wiggle-slow' : ''} ${
+                  isHovered || isIdleJumping ? 'allm-animate-bounce-subtle' : ''
+                }`}
+              />
+            </div>
           </button>
           {/* Enhanced SVG shadow under mascot */}
           <svg

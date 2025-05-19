@@ -23,7 +23,7 @@ export default function App() {
 
   const positionClasses = {
     "bottom-left": "allm-bottom-0 allm-left-0 allm-ml-4",
-    "bottom-right": "allm-bottom-0 allm-right-0 allm-mr-4",
+    "bottom-right": "allm-bottom-0 allm-right-0 allm-mr-4 allm-mb-[60px]",
     "top-left": "allm-top-0 allm-left-0 allm-ml-4 allm-mt-4",
     "top-right": "allm-top-0 allm-right-0 allm-mr-4 allm-mt-4",
   };
