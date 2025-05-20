@@ -30,3 +30,11 @@
     opacity: 100%;
   }
 }
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+.allm-animate-wiggle {
+  animation: wiggle 0.4s ease-in-out infinite;
+}
