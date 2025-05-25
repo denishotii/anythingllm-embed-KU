@@ -9,6 +9,7 @@ export default function ChatContainer({
   sessionId,
   settings,
   knownHistory = [],
+  labels,
 }) {
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
@@ -132,7 +133,7 @@ export default function ChatContainer({
   return (
     <div className="allm-h-full allm-w-full allm-flex allm-flex-col">
       <div className="allm-flex-1 allm-min-h-0 allm-mb-8">
-        <ChatHistory settings={settings} history={chatHistory} />
+        <ChatHistory settings={settings} history={chatHistory} labels={labels} />
       </div>
       <div className="allm-flex-shrink-0 allm-mt-auto">
         <PromptInput
@@ -142,6 +143,7 @@ export default function ChatContainer({
           onChange={handleMessageChange}
           inputDisabled={loadingResponse}
           buttonDisabled={loadingResponse}
+          labels={labels}
         />
       </div>
     </div>

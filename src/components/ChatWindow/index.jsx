@@ -5,8 +5,16 @@ import ChatContainer from "./ChatContainer";
 import Sponsor from "../Sponsor";
 import { ChatHistoryLoading } from "./ChatContainer/ChatHistory";
 import ResetChat from "../ResetChat";
+import { useTranslation } from "react-i18next";
+import { getLanguageLabels } from "@/utils/language";
+import { useState, useEffect } from "react";
 
 export default function ChatWindow({ closeChat, settings, sessionId }) {
+  const { i18n } = useTranslation();
+  const [labels, setLabels] = useState(() => getLanguageLabels(i18n.language));
+  useEffect(() => {
+    setLabels(getLanguageLabels(i18n.language));
+  }, [i18n.language]);
   const { chatHistory, setChatHistory, loading } = useChatHistory(
     settings,
     sessionId
@@ -21,6 +29,7 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
           iconUrl={settings.brandImageUrl}
           closeChat={closeChat}
           setChatHistory={setChatHistory}
+          labels={labels}
         />
         <ChatHistoryLoading />
         <div className="allm-pt-4 allm-pb-2 allm-h-fit allm-gap-y-1">
@@ -42,6 +51,7 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
           iconUrl={settings.brandImageUrl}
           closeChat={closeChat}
           setChatHistory={setChatHistory}
+          labels={labels}
         />
       )}
       <div className="allm-flex-grow allm-overflow-y-auto">
@@ -49,9 +59,10 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
           sessionId={sessionId}
           settings={settings}
           knownHistory={chatHistory}
+          labels={labels}
         />
       </div>
-      <div className="allm-mt-4 allm-pb-4 allm-h-fit allm-gap-y-2 allm-z-10">
+      {/* <div className="allm-mt-4 allm-pb-4 allm-h-fit allm-gap-y-2 allm-z-10">
         <Sponsor settings={settings} />
         <ResetChat
           setChatHistory={setChatHistory}
@@ -59,7 +70,7 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
           sessionId={sessionId}
           closeChat={closeChat}
         />
-      </div>
+      </div> */}
     </div>
   );
 }

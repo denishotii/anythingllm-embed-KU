@@ -19,6 +19,8 @@ export const enLabels = {
       "I'm here to support your KU journey!",
     ]
   },
+  inputPlaceholder: "Ask me anything about KU…",
+  welcomePanel: "I'm KUala-Bot. Here to guide you through KU.",
 };
 
 export const deLabels = {
@@ -42,4 +44,6 @@ export const deLabels = {
       "Ich begleite dich durch dein KU-Studium!",
     ]
   },
+  inputPlaceholder: "Frag mich alles über die KU…",
+  welcomePanel: "Ich bin KUala-Bot. Ich begleite dich durch die KU.",
 }; 
