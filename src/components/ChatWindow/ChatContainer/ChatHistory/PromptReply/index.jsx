@@ -2,7 +2,7 @@ import { forwardRef, memo, useState } from "react";
 import { Warning, CircleNotch, CaretDown } from "@phosphor-icons/react";
 import renderMarkdown from "@/utils/chat/markdown";
 import { embedderSettings } from "@/main";
-import AnythingLLMIcon from "@/assets/anything-llm-icon.svg";
+import KUalaWithBook from "@/assets/KUalaWithBook.svg";
 import { formatDate } from "@/utils/date";
 
 const ThinkingIndicator = ({ hasThought }) => {
@@ -84,21 +84,20 @@ const PromptReply = forwardRef(
       return (
         <div className="allm-py-[5px]">
           <div className="allm-text-[10px] allm-text-gray-400 allm-ml-[54px] allm-mr-6 allm-mb-2 allm-text-left allm-font-sans">
-            {embedderSettings.settings.assistantName ||
-              "Anything LLM Chat Assistant"}
+            KUala-Bot
           </div>
           <div className="allm-flex allm-items-start allm-w-full allm-h-fit allm-justify-start">
             <img
-              src={embedderSettings.settings.assistantIcon || AnythingLLMIcon}
-              alt="Anything LLM Icon"
+              src={KUalaWithBook}
+              alt="KUala Bot"
               className="allm-w-9 allm-h-9 allm-flex-shrink-0 allm-ml-2"
             />
             <div
               style={{
                 wordBreak: "break-word",
-                backgroundColor: embedderSettings.ASSISTANT_STYLES.msgBg,
+                backgroundColor: "#f8f9fc",
               }}
-              className={`allm-py-[11px] allm-px-4 allm-flex allm-flex-col ${embedderSettings.ASSISTANT_STYLES.base} allm-shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
+              className="allm-py-[11px] allm-px-4 allm-flex allm-flex-col allm-rounded-2xl allm-rounded-tl-none allm-text-[#1d3c78] allm-ml-4 allm-mr-[54px] allm-shadow-[0_4px_14px_rgba(0,0,0,0.08)]"
             >
               {hasIncompleteThinkTag && streamingThought && (
                 <ThoughtBubble thought={streamingThought} />
@@ -114,13 +113,12 @@ const PromptReply = forwardRef(
       return (
         <div className="allm-py-[5px]">
           <div className="allm-text-[10px] allm-text-gray-400 allm-ml-[54px] allm-mr-6 allm-mb-2 allm-text-left allm-font-sans">
-            {embedderSettings.settings.assistantName ||
-              "Anything LLM Chat Assistant"}
+            KUala-Bot
           </div>
           <div className="allm-flex allm-items-start allm-w-full allm-h-fit allm-justify-start">
             <img
-              src={embedderSettings.settings.assistantIcon || AnythingLLMIcon}
-              alt="Anything LLM Icon"
+              src={KUalaWithBook}
+              alt="KUala Bot"
               className="allm-w-9 allm-h-9 allm-flex-shrink-0 allm-ml-2"
             />
             <div className="allm-py-[11px] allm-px-4 allm-rounded-lg allm-flex allm-flex-col allm-bg-red-200 allm-shadow-[0_4px_14px_rgba(0,0,0,0.25)] allm-mr-[37px] allm-ml-[9px]">
@@ -140,8 +138,7 @@ const PromptReply = forwardRef(
     return (
       <div className="allm-py-[5px]">
         <div className="allm-text-[10px] allm-text-gray-400 allm-ml-[54px] allm-mr-6 allm-mb-2 allm-text-left allm-font-sans">
-          {embedderSettings.settings.assistantName ||
-            "Anything LLM Chat Assistant"}
+          KUala-Bot
         </div>
         <div
           key={uuid}
@@ -149,16 +146,16 @@ const PromptReply = forwardRef(
           className="allm-flex allm-items-start allm-w-full allm-h-fit allm-justify-start"
         >
           <img
-            src={embedderSettings.settings.assistantIcon || AnythingLLMIcon}
-            alt="Anything LLM Icon"
+            src={KUalaWithBook}
+            alt="KUala Bot"
             className="allm-w-9 allm-h-9 allm-flex-shrink-0 allm-ml-2"
           />
           <div
             style={{
               wordBreak: "break-word",
-              backgroundColor: embedderSettings.ASSISTANT_STYLES.msgBg,
+              backgroundColor: "#f8f9fc",
             }}
-            className={`allm-py-[11px] allm-px-4 allm-flex allm-flex-col ${embedderSettings.ASSISTANT_STYLES.base} allm-shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
+            className="allm-py-[11px] allm-px-4 allm-flex allm-flex-col allm-rounded-2xl allm-rounded-tl-none allm-text-[#1d3c78] allm-ml-4 allm-mr-[54px] allm-shadow-[0_4px_14px_rgba(0,0,0,0.08)]"
           >
             {thoughts.length > 0 && (
               <ThoughtBubble thought={thoughts.join("\n\n")} />

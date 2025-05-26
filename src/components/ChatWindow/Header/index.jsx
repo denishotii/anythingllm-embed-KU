@@ -62,7 +62,7 @@ export default function ChatWindowHeader({
   return (
     <div
       style={{ borderBottom: "1px solid #E9E9E9" }}
-      className="allm-relative allm-flex allm-items-center allm-justify-center allm-rounded-t-2xl allm-h-[76px]"
+      className="allm-relative allm-flex allm-items-center allm-justify-center allm-rounded-t-2xl allm-h-[76px] allm-min-h-[76px] allm-flex-shrink-0"
       id="anything-llm-header"
     >
       {/* Language Switcher - absolute left */}

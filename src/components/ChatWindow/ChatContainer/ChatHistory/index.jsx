@@ -49,7 +49,7 @@ export default function ChatHistory({ settings = {}, history = [], labels }) {
 
   if (history.length === 0) {
     return (
-      <div className="allm-h-full allm-overflow-y-auto allm-px-2 allm-py-4 allm-flex allm-flex-col allm-justify-start allm-no-scroll">
+      <div className="allm-h-full allm-overflow-y-hidden allm-px-2 allm-py-4 allm-flex allm-flex-col allm-justify-start allm-no-scroll">
         <div className="allm-flex allm-h-full allm-flex-col allm-items-center allm-justify-center">
           <WelcomePanel labels={labels} />
           <SuggestedMessages settings={settings} />
