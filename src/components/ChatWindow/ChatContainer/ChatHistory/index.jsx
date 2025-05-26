@@ -1,12 +1,13 @@
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
+import WelcomePanel from "./WelcomePanel";
 import { useEffect, useRef, useState } from "react";
 import { ArrowDown, CircleNotch } from "@phosphor-icons/react";
 import { embedderSettings } from "@/main";
 import debounce from "lodash.debounce";
 import { SEND_TEXT_EVENT } from "..";
 
-export default function ChatHistory({ settings = {}, history = [] }) {
+export default function ChatHistory({ settings = {}, history = [], labels }) {
   const replyRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
@@ -48,11 +49,9 @@ export default function ChatHistory({ settings = {}, history = [] }) {
 
   if (history.length === 0) {
     return (
-      <div className="allm-h-full allm-overflow-y-auto allm-px-2 allm-py-4 allm-flex allm-flex-col allm-justify-start allm-no-scroll">
+      <div className="allm-h-full allm-overflow-y-hidden allm-px-2 allm-py-4 allm-flex allm-flex-col allm-justify-start allm-no-scroll">
         <div className="allm-flex allm-h-full allm-flex-col allm-items-center allm-justify-center">
-          <p className="allm-text-slate-400 allm-text-sm allm-font-sans allm-py-4 allm-text-center">
-            {settings?.greeting ?? "Send a chat to get started."}
-          </p>
+          <WelcomePanel labels={labels} />
           <SuggestedMessages settings={settings} />
         </div>
       </div>

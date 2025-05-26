@@ -30,7 +30,7 @@ export default function App() {
 
   const position = embedSettings.position || "bottom-right";
   const windowWidth = embedSettings.windowWidth ?? "400px";
-  const windowHeight = embedSettings.windowHeight ?? "700px";
+  const windowHeight = embedSettings.windowHeight ?? "600px";
 
   return (
     <I18nextProvider i18n={i18next}>

@@ -4,7 +4,7 @@ import renderMarkdown from "@/utils/chat/markdown";
 import DOMPurify from "@/utils/chat/purify";
 import { embedderSettings } from "@/main";
 import { v4 } from "uuid";
-import AnythingLLMIcon from "@/assets/anything-llm-icon.svg";
+import KUalaWithBook from "@/assets/KUalaWithBook.svg";
 import { formatDate } from "@/utils/date";
 
 const ThoughtBubble = ({ thought }) => {
@@ -68,8 +68,7 @@ const HistoricalMessage = forwardRef(
       <div className="allm-py-[5px]">
         {role === "assistant" && (
           <div className="allm-text-[10px] allm-text-gray-400 allm-ml-[54px] allm-mr-6 allm-mb-2 allm-text-left allm-font-sans">
-            {embedderSettings.settings.assistantName ||
-              "Anything LLM Chat Assistant"}
+            KUala-Bot
           </div>
         )}
         <div
@@ -81,10 +80,10 @@ const HistoricalMessage = forwardRef(
         >
           {role === "assistant" && (
             <img
-              src={embedderSettings.settings.assistantIcon || AnythingLLMIcon}
-              alt="Anything LLM Icon"
+              src={KUalaWithBook}
+              alt="KUala Bot"
               className="allm-w-9 allm-h-9 allm-flex-shrink-0 allm-ml-2"
-              id="anything-llm-icon"
+              id="kuala-icon"
             />
           )}
           <div
@@ -92,16 +91,16 @@ const HistoricalMessage = forwardRef(
               wordBreak: "break-word",
               backgroundColor:
                 role === "user"
-                  ? embedderSettings.USER_STYLES.msgBg
-                  : embedderSettings.ASSISTANT_STYLES.msgBg,
+                  ? "#1d3c78"
+                  : "#f8f9fc",
             }}
             className={`allm-py-[11px] allm-px-4 allm-flex allm-flex-col allm-font-sans ${
               error
                 ? "allm-bg-red-200 allm-rounded-lg allm-mr-[37px] allm-ml-[9px]"
                 : role === "user"
-                  ? `${embedderSettings.USER_STYLES.base} allm-anything-llm-user-message`
-                  : `${embedderSettings.ASSISTANT_STYLES.base} allm-anything-llm-assistant-message`
-            } allm-shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
+                  ? "allm-rounded-2xl allm-rounded-tr-none allm-text-white allm-mr-4 allm-ml-[54px] allm-shadow-[0_4px_14px_rgba(29,60,120,0.15)]"
+                  : "allm-rounded-2xl allm-rounded-tl-none allm-text-[#1d3c78] allm-ml-4 allm-mr-[54px] allm-shadow-[0_4px_14px_rgba(0,0,0,0.08)]"
+            }`}
           >
             <div className="allm-flex allm-flex-col">
               {error ? (
@@ -135,7 +134,11 @@ const HistoricalMessage = forwardRef(
 
         {sentAt && (
           <div
-            className={`allm-font-sans allm-text-[10px] allm-text-gray-400 allm-ml-[54px] allm-mr-6 allm-mt-2 ${role === "user" ? "allm-text-right" : "allm-text-left"}`}
+            className={`allm-font-sans allm-text-[10px] allm-text-gray-400 allm-mt-2 ${
+              role === "user" 
+                ? "allm-text-right allm-mr-4" 
+                : "allm-text-left allm-ml-[54px]"
+            }`}
           >
             {formatDate(sentAt)}
           </div>
