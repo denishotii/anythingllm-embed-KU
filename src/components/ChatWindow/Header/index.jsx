@@ -121,7 +121,7 @@ function MenuItem({ as = 'button', icon, children, className = '', ...props }) {
   const Comp = as;
   return (
     <Comp
-      className={`allm-flex allm-items-center allm-gap-3 allm-w-full allm-bg-transparent allm-border-none allm-px-5 allm-py-3 allm-text-[15px] allm-font-medium allm-text-[#1d3c78] hover:allm-bg-[#e6ecf7] focus:allm-bg-[#e6ecf7] allm-transition-colors allm-duration-150 allm-outline-none allm-cursor-pointer allm-rounded-lg ${className}`}
+      className={`allm-flex allm-items-center allm-gap-3 allm-w-full allm-bg-transparent allm-border-none allm-px-5 allm-py-3 allm-text-[15px] allm-font-medium allm-text-[#1d3c78] hover:allm-bg-[#e6ecf7] focus:allm-bg-[#e6ecf7] allm-transition-colors allm-duration-150 allm-outline-none allm-cursor-pointer ${className}`}
       {...props}
     >
       {icon}
@@ -135,7 +135,7 @@ function OptionsMenu({ settings, showing, resetChat, sessionId, menuRef, labels,
   return (
     <div
       ref={menuRef}
-      className="allm-bg-white allm-absolute allm-z-10 allm-flex allm-flex-col allm-gap-y-1 allm-rounded-2xl allm-shadow-2xl allm-top-[64px] allm-right-[46px] allm-py-2 allm-min-w-[220px] allm-border allm-border-[#e5e7eb]"
+      className="allm-bg-white allm-absolute allm-z-10 allm-flex allm-flex-col allm-gap-y-1 allm-rounded-2xl allm-shadow-2xl allm-top-[64px] allm-right-[46px] allm-py-2 allm-min-w-[220px] allm-border allm-border-[#e5e7eb] allm-overflow-hidden"
     >
       <MenuItem onClick={resetChat} icon={<ArrowCounterClockwise size={22} className="allm-text-[#1d3c78]" />}>
         {labels.resetChat}
@@ -149,8 +149,6 @@ function OptionsMenu({ settings, showing, resetChat, sessionId, menuRef, labels,
         target="_blank"
         rel="noopener noreferrer"
         icon={<Info size={22} className="allm-text-[#1d3c78]" />}
-        data-sponsor-link="https://www.ku.de/studibot-disclaimer"
-        data-sponsor-text="Disclaimer"
         className="allm-no-underline"
       >
         {labels.disclaimer || "Disclaimer"}

@@ -72,7 +72,7 @@ export default function PromptInput({
             ref={formRef}
             type="submit"
             disabled={buttonDisabled}
-            className="allm-ml-2 allm-mr-1 allm-flex allm-items-center allm-justify-center allm-w-10 allm-h-10 allm-rounded-full allm-bg-[#1d3c78] allm-text-white allm-shadow-md allm-transition-all allm-duration-200 hover:allm-bg-[#163060] hover:allm-scale-110 hover:allm-cursor-pointer active:allm-scale-95 disabled:allm-opacity-50 disabled:allm-cursor-not-allowed focus:allm-outline-none focus:allm-ring-2 focus:allm-ring-[#1d3c78]/40"
+            className="allm-ml-2 allm-mr-1 allm-flex allm-items-center allm-justify-center allm-w-10 allm-h-10 allm-rounded-full allm-bg-[#1d3c78] allm-text-white allm-border allm-border-[#1d3c78] allm-shadow-none allm-transition-transform allm-duration-150 hover:allm-bg-[#163060] hover:allm-scale-110 hover:allm-cursor-pointer active:allm-scale-95 disabled:allm-opacity-50 disabled:allm-cursor-not-allowed focus:allm-outline-none focus:allm-ring-0"
             id="send-message-button"
             aria-label="Send message"
           >
