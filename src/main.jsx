@@ -4,6 +4,7 @@ import App from "./App.jsx";
 import "./index.css";
 import { parseStylesSrc } from "./utils/constants.js";
 import { initI18n } from "./i18n.js";
+import ShadowRootPortal from "./components/ShadowRootPortal";
 
 const appElement = document.createElement("div");
 document.body.appendChild(appElement);
@@ -32,6 +33,8 @@ initI18n(scriptSettings);
 const root = ReactDOM.createRoot(appElement);
 root.render(
   <React.StrictMode>
-    <App />
+    <ShadowRootPortal cssHref="/src/index.css">
+      <App />
+    </ShadowRootPortal>
   </React.StrictMode>
 );
