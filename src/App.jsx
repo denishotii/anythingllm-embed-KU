@@ -32,7 +32,7 @@ export default function App() {
           className={`
             allm-fixed allm-bottom-0 allm-right-0 allm-z-50
             allm-bg-white allm-rounded-2xl allm-shadow-[0_4px_14px_rgba(0,0,0,0.25)] allm-border allm-border-gray-300 allm-flex allm-flex-col
-            allm-w-[95%] allm-h-[90%] allm-mr-1 allm-mb-[60px]
+            allm-w-[95%] allm-h-[95%] allm-mr-1 allm-mb-[15px]
             md:allm-w-[400px] md:allm-h-[600px] md:allm-mr-4 md:allm-mb-[60px]
           `}
           id="anything-llm-chat"
