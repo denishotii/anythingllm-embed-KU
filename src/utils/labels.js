@@ -20,7 +20,7 @@ export const enLabels = {
     ]
   },
   inputPlaceholder: "Ask me anything about KU…",
-  welcomePanel: "I'm KUala-Bot. Here to guide you through KU.",
+  welcomePanel: "I'm KUala-Bot. How can I help you?",
 };
 
 export const deLabels = {
@@ -45,5 +45,5 @@ export const deLabels = {
     ]
   },
   inputPlaceholder: "Frag mich alles über die KU…",
-  welcomePanel: "Ich bin KUala-Bot. Ich begleite dich durch die KU.",
+  welcomePanel: "Ich bin KUala-Bot. Wie kann ich Ihnen weiterhelfen?",
 }; 
