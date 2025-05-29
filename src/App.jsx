@@ -21,17 +21,6 @@ export default function App() {
 
   if (!embedSettings.loaded) return null;
 
-  const positionClasses = {
-    "bottom-left": "allm-bottom-0 allm-left-0 allm-ml-4",
-    "bottom-right": "allm-bottom-0 allm-right-0 allm-mr-4 allm-mb-[60px]",
-    "top-left": "allm-top-0 allm-left-0 allm-ml-4 allm-mt-4",
-    "top-right": "allm-top-0 allm-right-0 allm-mr-4 allm-mt-4",
-  };
-
-  const position = embedSettings.position || "bottom-right";
-  const windowWidth = embedSettings.windowWidth ?? "400px";
-  const windowHeight = embedSettings.windowHeight ?? "600px";
-
   return (
     <I18nextProvider i18n={i18next}>
       <Head />
@@ -40,12 +29,12 @@ export default function App() {
         className={`allm-fixed allm-inset-0 allm-z-50 ${isChatOpen ? "allm-block" : "allm-hidden"}`}
       >
         <div
-          style={{
-            maxWidth: windowWidth,
-            maxHeight: windowHeight,
-            height: "100%",
-          }}
-          className={`allm-h-full allm-w-full allm-bg-white allm-fixed allm-bottom-0 allm-right-0 allm-mb-4 allm-md:mr-4 allm-rounded-2xl allm-border allm-border-gray-300 allm-shadow-[0_4px_14px_rgba(0,0,0,0.25)] allm-flex allm-flex-col ${positionClasses[position]}`}
+          className={`
+            allm-fixed allm-bottom-0 allm-right-0 allm-z-50
+            allm-bg-white allm-rounded-2xl allm-shadow-[0_4px_14px_rgba(0,0,0,0.25)] allm-border allm-border-gray-300 allm-flex allm-flex-col
+            allm-w-[95%] allm-h-[90%] allm-mr-1 allm-mb-[60px]
+            md:allm-w-[400px] md:allm-h-[600px] md:allm-mr-4 md:allm-mb-[60px]
+          `}
           id="anything-llm-chat"
         >
           {isChatOpen && (
@@ -59,8 +48,11 @@ export default function App() {
       </div>
       {!isChatOpen && (
         <div
-          id="anything-llm-embed-chat-button-container"
-          className={`allm-fixed allm-bottom-0 ${positionClasses[position]} allm-mb-4 allm-z-50`}
+          className={`
+            allm-fixed allm-bottom-0 allm-right-0 allm-z-50
+            allm-mr-1 allm-mb-[60px]
+            md:allm-mr-4 md:allm-mb-[60px]
+          `}
         >
           <OpenButton
             settings={embedSettings}
