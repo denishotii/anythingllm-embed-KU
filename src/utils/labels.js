@@ -11,7 +11,7 @@ export const enLabels = {
     message: "Hello! Need help navigating KU?"
   },
   speechBubble: {
-    greeting: "Hello, I'm KUala-Bot.",
+    greeting: "How can I help you?",
     messages: [
       "Got a question about studying at KU?",
       "Ask me anything about the KU campus!",
@@ -20,7 +20,7 @@ export const enLabels = {
     ]
   },
   inputPlaceholder: "Ask me anything about KU…",
-  welcomePanel: "I'm KUala-Bot. How can I help you?",
+  welcomePanel: "Hello, I'm KUala-Bot! What would you like to know?",
 };
 
 export const deLabels = {
@@ -36,7 +36,7 @@ export const deLabels = {
     message: "Hallo! Brauchen Sie Hilfe bei der Navigation durch die KU?"
   },
   speechBubble: {
-    greeting: "Hallo, ich bin KUala-Bot.",
+    greeting: "Wie kann ich Ihnen weiterhelfen?",
     messages: [
       "Fragen zum Studium an der KU?",
       "Frag mich etwas zum KU-Campus!",
@@ -45,5 +45,5 @@ export const deLabels = {
     ]
   },
   inputPlaceholder: "Frag mich alles über die KU…",
-  welcomePanel: "Ich bin KUala-Bot. Wie kann ich Ihnen weiterhelfen?",
+  welcomePanel: "Hallo, ich bin KUala-Bot! Was möchten Sie gerne wissen?",
 }; 
