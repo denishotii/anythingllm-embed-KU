@@ -2,6 +2,7 @@ import { encode as HTMLEncode } from "he";
 import markdownIt from "markdown-it";
 import { staticHljs as hljs } from "./hljs";
 import { v4 } from "uuid";
+import { processMarkdownLinks } from "@/utils/chatbotTracking";
 
 const markdown = markdownIt({
   html: false,
@@ -54,5 +55,7 @@ markdown.renderer.rules.link_open = (tokens, idx) => {
 };
 
 export default function renderMarkdown(text = "") {
-  return markdown.render(text);
+  // Preprocess markdown to add UTM params to all links
+  const processed = processMarkdownLinks(text);
+  return markdown.render(processed);
 }
