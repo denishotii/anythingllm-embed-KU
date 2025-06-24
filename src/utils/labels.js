@@ -21,6 +21,13 @@ export const enLabels = {
   },
   inputPlaceholder: "Ask me anything about KU…",
   welcomePanel: "Hello, I'm KUala-Bot! What would you like to know?",
+  greetingResponse: "Hi! 👋 I'm KUala-Bot, your friendly assistant for everything related to KU. How can I support you today?",
+  farewellResponses: [
+    "Goodbye! 👋 Thank you for your questions!",
+    "See you later! 👋 Feel free to come back anytime if you have more questions about KU!",
+    "Bye! 👋 I'm always here when you need help!",
+    "Goodbye! 👋 Wishing you success with your KU journey!"
+  ]
 };
 
 export const deLabels = {
@@ -46,4 +53,11 @@ export const deLabels = {
   },
   inputPlaceholder: "Frag mich alles über die KU…",
   welcomePanel: "Hallo, ich bin KUala-Bot! Was möchten Sie gerne wissen?",
+  greetingResponse: "Hallo! 👋 Ich bin KUala-Bot - dein digitaler Assistent für alles rund um die KU. Wie kann ich dir heute helfen?",
+  farewellResponses: [
+    "Auf Wiedersehen! 👋 Vielen Dank für deine Fragen!",
+    "Tschüss! 👋 Komm gerne wieder, wenn du weitere Fragen zur KU hast!",
+    "Bis später! 👋 Ich bin immer hier, wenn du Hilfe brauchst!",
+    "Auf Wiedersehen! 👋 Viel Erfolg auf deinem KU-Weg!"
+  ]
 }; 
