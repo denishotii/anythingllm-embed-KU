@@ -13,12 +13,6 @@ export default function App() {
   const embedSettings = useGetScriptAttributes();
   const sessionId = useSessionId();
 
-  useEffect(() => {
-    if (embedSettings.openOnLoad === "on") {
-      toggleOpenChat(true);
-    }
-  }, [embedSettings.loaded]);
-
   if (!embedSettings.loaded) return null;
 
   return (

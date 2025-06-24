@@ -14,13 +14,20 @@ export const enLabels = {
     greeting: "How can I help you?",
     messages: [
       "Got a question about studying at KU?",
-      "Ask me anything about the KU campus!",
+      "Ask me anything about the KU!",
       "Let's make studying simpler!",
       "I'm here to support your KU journey!",
     ]
   },
   inputPlaceholder: "Ask me anything about KU…",
   welcomePanel: "Hello, I'm KUala-Bot! What would you like to know?",
+  greetingResponse: "Hi! 👋 I'm KUala-Bot, your friendly assistant for everything related to KU. How can I support you today?",
+  farewellResponses: [
+    "Goodbye! 👋 Thank you for your questions!",
+    "See you later! 👋 Feel free to come back anytime if you have more questions about KU!",
+    "Bye! 👋 I'm always here when you need help!",
+    "Goodbye! 👋 Wishing you success with your KU journey!"
+  ]
 };
 
 export const deLabels = {
@@ -39,11 +46,18 @@ export const deLabels = {
     greeting: "Wie kann ich Ihnen weiterhelfen?",
     messages: [
       "Fragen zum Studium an der KU?",
-      "Frag mich etwas zum KU-Campus!",
+      "Frag mich etwas zum KU!",
       "Lass uns das Studium einfacher machen!",
       "Ich begleite dich durch dein KU-Studium!",
     ]
   },
   inputPlaceholder: "Frag mich alles über die KU…",
   welcomePanel: "Hallo, ich bin KUala-Bot! Was möchten Sie gerne wissen?",
+  greetingResponse: "Hallo! 👋 Ich bin KUala-Bot - dein digitaler Assistent für alles rund um die KU. Wie kann ich dir heute helfen?",
+  farewellResponses: [
+    "Auf Wiedersehen! 👋 Vielen Dank für deine Fragen!",
+    "Tschüss! 👋 Komm gerne wieder, wenn du weitere Fragen zur KU hast!",
+    "Bis später! 👋 Ich bin immer hier, wenn du Hilfe brauchst!",
+    "Auf Wiedersehen! 👋 Viel Erfolg auf deinem KU-Weg!"
+  ]
 }; 

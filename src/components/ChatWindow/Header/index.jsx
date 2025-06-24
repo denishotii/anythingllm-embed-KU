@@ -1,6 +1,8 @@
 import AnythingLLMIcon from "@/assets/anything-llm-icon.svg";
 import ChatService from "@/models/chatService";
 import { detectLanguage, getLanguageLabels } from "@/utils/language";
+import { updateSessionActivity } from "@/utils/sessionManager";
+import { embedderSettings } from "@/main";
 import {
   ArrowCounterClockwise,
   Check,
@@ -34,6 +36,11 @@ export default function ChatWindowHeader({
     await ChatService.resetEmbedChatSession(settings, sessionId);
     setChatHistory([]);
     setShowOptions(false);
+    
+    // Update session activity after reset
+    if (embedderSettings?.settings?.embedId) {
+      updateSessionActivity(embedderSettings.settings.embedId);
+    }
   };
 
   const handleLangSwitch = () => {
@@ -50,14 +57,19 @@ export default function ChatWindowHeader({
         buttonRef.current &&
         !buttonRef.current.contains(event.target)
       ) {
-        setShowOptions(false);
+        // Use requestAnimationFrame to ensure the current click finishes
+        requestAnimationFrame(() => {
+          setShowOptions(false);
+        });
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
+
+    document.addEventListener("click", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
-  }, [menuRef]);
+  }, []);
+  
 
   return (
     <div
@@ -87,7 +99,10 @@ export default function ChatWindowHeader({
           <button
             ref={buttonRef}
             type="button"
-            onClick={() => setShowOptions(!showingOptions)}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevents click bubbling to document
+              setShowOptions((prev) => !prev);
+            }}
             className="allm-bg-transparent allm-border-none allm-rounded-full allm-p-2 allm-transition-colors allm-duration-150 hover:allm-bg-[#e6ecf7] focus:allm-bg-[#e6ecf7] hover:allm-cursor-pointer focus:allm-outline-none focus:allm-ring-2 focus:allm-ring-[#1d3c78]/30 allm-text-slate-800/60"
             aria-label="Options"
           >
