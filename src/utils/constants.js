@@ -1,4 +1,5 @@
 export const CHAT_UI_REOPEN = "___anythingllm-chat-widget-open___";
+export const SESSION_LAST_ACTIVITY = "___anythingllm-session-last-activity___";
 export function parseStylesSrc(scriptSrc = null) {
   try {
     const _url = new URL(scriptSrc);

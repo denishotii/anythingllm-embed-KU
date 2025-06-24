@@ -1,6 +1,8 @@
 import AnythingLLMIcon from "@/assets/anything-llm-icon.svg";
 import ChatService from "@/models/chatService";
 import { detectLanguage, getLanguageLabels } from "@/utils/language";
+import { updateSessionActivity } from "@/utils/sessionManager";
+import { embedderSettings } from "@/main";
 import {
   ArrowCounterClockwise,
   Check,
@@ -34,6 +36,11 @@ export default function ChatWindowHeader({
     await ChatService.resetEmbedChatSession(settings, sessionId);
     setChatHistory([]);
     setShowOptions(false);
+    
+    // Update session activity after reset
+    if (embedderSettings?.settings?.embedId) {
+      updateSessionActivity(embedderSettings.settings.embedId);
+    }
   };
 
   const handleLangSwitch = () => {

@@ -1,6 +1,7 @@
 import ChatWindowHeader from "./Header";
 import SessionId from "../SessionId";
 import useChatHistory from "@/hooks/chat/useChatHistory";
+import useAutoReset from "@/hooks/useAutoReset";
 import ChatContainer from "./ChatContainer";
 import Sponsor from "../Sponsor";
 import { ChatHistoryLoading } from "./ChatContainer/ChatHistory";
@@ -19,6 +20,9 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
     settings,
     sessionId
   );
+
+  // Auto-reset chat if session expired due to inactivity
+  useAutoReset(settings, sessionId, setChatHistory);
 
   if (loading) {
     return (

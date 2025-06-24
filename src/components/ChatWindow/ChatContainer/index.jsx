@@ -3,6 +3,8 @@ import ChatHistory from "./ChatHistory";
 import PromptInput from "./PromptInput";
 import handleChat from "@/utils/chat";
 import ChatService from "@/models/chatService";
+import { updateSessionActivity } from "@/utils/sessionManager";
+import { embedderSettings } from "@/main";
 export const SEND_TEXT_EVENT = "anythingllm-embed-send-prompt";
 
 export default function ChatContainer({
@@ -31,6 +33,11 @@ export default function ChatContainer({
 
     if (!message || message === "") return false;
 
+    // Update session activity when user sends a message
+    if (embedderSettings?.settings?.embedId) {
+      updateSessionActivity(embedderSettings.settings.embedId);
+    }
+
     const prevChatHistory = [
       ...chatHistory,
       { content: message, role: "user", sentAt: Math.floor(Date.now() / 1000) },
@@ -50,6 +57,11 @@ export default function ChatContainer({
 
   const sendCommand = (command, history = [], attachments = []) => {
     if (!command || command === "") return false;
+
+    // Update session activity when a command is sent
+    if (embedderSettings?.settings?.embedId) {
+      updateSessionActivity(embedderSettings.settings.embedId);
+    }
 
     let prevChatHistory;
     if (history.length > 0) {
