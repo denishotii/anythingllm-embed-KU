@@ -14,7 +14,7 @@ export const enLabels = {
     greeting: "How can I help you?",
     messages: [
       "Got a question about studying at KU?",
-      "Ask me anything about the KU campus!",
+      "Ask me anything about the KU!",
       "Let's make studying simpler!",
       "I'm here to support your KU journey!",
     ]
@@ -39,7 +39,7 @@ export const deLabels = {
     greeting: "Wie kann ich Ihnen weiterhelfen?",
     messages: [
       "Fragen zum Studium an der KU?",
-      "Frag mich etwas zum KU-Campus!",
+      "Frag mich etwas zum KU!",
       "Lass uns das Studium einfacher machen!",
       "Ich begleite dich durch dein KU-Studium!",
     ]
