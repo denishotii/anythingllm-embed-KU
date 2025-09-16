@@ -46,7 +46,7 @@ export const deLabels = {
     greeting: "Wie kann ich Ihnen weiterhelfen?",
     messages: [
       "Fragen zum Studium an der KU?",
-      "Frag mich etwas zum KU!",
+      "Frag mich etwas zur KU!",
       "Lass uns das Studium einfacher machen!",
       "Ich begleite dich durch dein KU-Studium!",
     ]
