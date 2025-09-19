@@ -13,13 +13,13 @@ export const enLabels = {
   speechBubble: {
     greeting: "How can I help you?",
     messages: [
-      "Got a question about studying at KU?",
+      "Got a question about studying at the KU?",
       "Ask me anything about the KU!",
-      "Let's make studying simpler!",
-      "I'm here to support your KU journey!",
+      "What would you like to know about the KU?",
+      " Get to know KU!",
     ]
   },
-  inputPlaceholder: "Ask me anything about KU…",
+  inputPlaceholder: "Ask me anything about the KU…",
   welcomePanel: "Hello, I'm KUala-Bot! What would you like to know?",
   greetingResponse: "Hi! 👋 I'm KUala-Bot, your friendly assistant for everything related to KU. How can I support you today?",
   farewellResponses: [
@@ -46,12 +46,12 @@ export const deLabels = {
     greeting: "Wie kann ich Ihnen weiterhelfen?",
     messages: [
       "Fragen zum Studium an der KU?",
-      "Frag mich etwas zur KU!",
-      "Lass uns das Studium einfacher machen!",
-      "Ich begleite dich durch dein KU-Studium!",
+      "Fragen Sie mich etwas zur KU!",
+      "Was möchten Sie über die KU wissen?",
+      "Lernen Sie die KU kennen!",
     ]
   },
-  inputPlaceholder: "Frag mich alles über die KU…",
+  inputPlaceholder: "Fragen Sie mich alles über die KU…",
   welcomePanel: "Hallo, ich bin KUala-Bot! Was möchten Sie gerne wissen?",
   greetingResponse: "Hallo! 👋 Ich bin KUala-Bot - dein digitaler Assistent für alles rund um die KU. Wie kann ich dir heute helfen?",
   farewellResponses: [
