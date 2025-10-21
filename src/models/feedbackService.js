@@ -47,12 +47,13 @@ const FeedbackService = {
   },
 
   /**
-   * Log when a feedback prompt is shown
+   * Log when a feedback prompt is shown/interacted with
    * @param {string} sessionId - Session ID
    * @param {string} promptType - INACTIVITY, POST_ANSWER, or SESSION_END
+   * @param {boolean} wasResponded - Whether user responded or skipped
    * @returns {Promise} - API response
    */
-  async logPromptShown(sessionId, promptType = "POST_ANSWER") {
+  async logPromptShown(sessionId, promptType = "POST_ANSWER", wasResponded = false) {
     try {
       const response = await fetch(`${this.baseUrl}/prompt`, {
         method: "POST",
@@ -62,7 +63,7 @@ const FeedbackService = {
         body: JSON.stringify({
           session_id: sessionId,
           prompt_type: promptType,
-          was_responded: false,
+          was_responded: wasResponded,
         }),
       });
 

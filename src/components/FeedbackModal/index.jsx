@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
+import FeedbackService from "@/models/feedbackService";
 
 export default function FeedbackModal({ 
   isVisible = true, 
   onClose, 
   onSubmit,
-  sessionId 
+  sessionId,
+  chatHistory = []
 }) {
   const { t } = useTranslation();
   const [rating, setRating] = useState(0);
@@ -45,7 +47,46 @@ export default function FeedbackModal({
     };
 
     try {
+      // Calculate session analytics from chat history
+      const actualMessages = chatHistory.filter(msg => !msg.pending);
+      const userMessages = actualMessages.filter(msg => msg.role === "user");
+      const botMessages = actualMessages.filter(msg => msg.role === "assistant");
+      
+      const firstMessage = actualMessages[0];
+      const lastMessage = actualMessages[actualMessages.length - 1];
+      
+      // Get timestamps from messages
+      let sessionStart = null;
+      let sessionEnd = null;
+      
+      if (firstMessage?.sentAt) {
+        sessionStart = new Date(firstMessage.sentAt * 1000).toISOString();
+      }
+      
+      if (lastMessage?.sentAt) {
+        sessionEnd = new Date(lastMessage.sentAt * 1000).toISOString();
+      }
+
+      // Submit session analytics first
+      const sessionData = {
+        session_id: sessionId,
+        message_count: actualMessages.length,
+        user_message_count: userMessages.length,
+        bot_message_count: botMessages.length,
+        session_start_at: sessionStart,
+        session_end_at: sessionEnd,
+        avg_response_time_ms: null
+      };
+      
+      console.log("📊 Submitting session analytics:", sessionData);
+      await FeedbackService.updateSession(sessionData);
+      
+      // Submit feedback
       await onSubmit(feedbackData);
+      
+      // Log that user responded to feedback prompt
+      await FeedbackService.logPromptShown(sessionId, "POST_ANSWER", true);
+      
       setIsSubmitted(true);
       
       // Auto close after success
@@ -61,6 +102,9 @@ export default function FeedbackModal({
   };
 
   const handleSkip = () => {
+    // Log that user skipped/dismissed the prompt
+    FeedbackService.logPromptShown(sessionId, "POST_ANSWER", false)
+      .catch(err => console.warn("Failed to log skip:", err));
     handleClose();
   };
 
@@ -85,11 +129,11 @@ export default function FeedbackModal({
       ? 'translate(-50%, -50%) translateY(10px)' 
       : 'translate(-50%, -50%) translateY(0)',
     width: '90%',
-    maxWidth: '320px',
+    maxWidth: '340px',
     backgroundColor: '#fff',
     borderRadius: '12px',
     boxShadow: '0 6px 25px rgba(0, 0, 0, 0.08)',
-    padding: '12px 20px 20px',
+    padding: '16px 24px 20px',
     fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
     textAlign: 'center',
     zIndex: 1000,
@@ -129,35 +173,43 @@ export default function FeedbackModal({
             onClick={handleClose}
             className="allm-absolute allm-transition-all"
             style={{ 
-              top: '0',
-              right: '0',
+              top: '-26px',
+              right: '-4px',
               color: '#aaa',
               fontSize: '16px',
               border: 'none',
               background: 'transparent',
-              padding: '4px',
+              borderRadius: '50%',
+              width: '32px',
+              height: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               cursor: 'pointer',
               transitionDuration: '0.2s',
               transitionTimingFunction: 'ease'
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.color = '#555';
-              e.currentTarget.style.transform = 'scale(1.15)';
+              e.currentTarget.style.transform = 'scale(1.1)';
+              e.currentTarget.style.backgroundColor = '#f9f9f9';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.color = '#aaa';
               e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.backgroundColor = '#fff';
             }}
             aria-label="Close"
           >
-            <X size={16} weight="bold" />
+            <X size={14} weight="bold" />
           </button>
         <h3 style={{ 
-          fontSize: '18px', 
+          fontSize: '16px', 
           fontWeight: 600, 
           color: '#222', 
-          letterSpacing: '0.3px',
-          marginBottom: '6px'
+          marginBottom: '6px',
+          lineHeight: '1.3',
+          paddingTop: '8px'
         }}>
           {t("feedback.title")}
         </h3>
@@ -165,7 +217,6 @@ export default function FeedbackModal({
           fontSize: '13px', 
           fontWeight: 500,
           color: '#777', 
-          letterSpacing: '0.3px',
           margin: 0
         }}>
           {t("feedback.subtitle")}
@@ -207,8 +258,7 @@ export default function FeedbackModal({
         <p className="allm-mb-2" style={{ 
           fontSize: '14px', 
           fontWeight: 500, 
-          color: '#444',
-          letterSpacing: '0.3px'
+          color: '#444'
         }}>
           {t("feedback.goal-question")}
         </p>
@@ -278,7 +328,8 @@ export default function FeedbackModal({
             color: '#333',
             border: '1px solid #ddd',
             borderRadius: '8px',
-            letterSpacing: '0.3px',
+            width: '100%',
+            boxSizing: 'border-box',
             transitionDuration: '0.2s',
             transitionTimingFunction: 'ease'
           }}

@@ -94,6 +94,7 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
         onClose={handleFeedbackClose}
         onSubmit={handleFeedbackSubmit}
         sessionId={sessionId}
+        chatHistory={chatHistory}
       />
       
       {/* <div className="allm-mt-4 allm-pb-4 allm-h-fit allm-gap-y-2 allm-z-10">
