@@ -8,7 +8,7 @@ export default function FeedbackModal({
   onClose, 
   onSubmit,
   sessionId,
-  chatHistory = []
+  sessionData = null
 }) {
   const { t } = useTranslation();
   const [rating, setRating] = useState(0);
@@ -47,39 +47,10 @@ export default function FeedbackModal({
     };
 
     try {
-      // Calculate session analytics from chat history
-      const actualMessages = chatHistory.filter(msg => !msg.pending);
-      const userMessages = actualMessages.filter(msg => msg.role === "user");
-      const botMessages = actualMessages.filter(msg => msg.role === "assistant");
-      
-      const firstMessage = actualMessages[0];
-      const lastMessage = actualMessages[actualMessages.length - 1];
-      
-      // Get timestamps from messages
-      let sessionStart = null;
-      let sessionEnd = null;
-      
-      if (firstMessage?.sentAt) {
-        sessionStart = new Date(firstMessage.sentAt * 1000).toISOString();
+      // Use session data from the session tracking hook
+      if (sessionData) {
+        await FeedbackService.updateSession(sessionData);
       }
-      
-      if (lastMessage?.sentAt) {
-        sessionEnd = new Date(lastMessage.sentAt * 1000).toISOString();
-      }
-
-      // Submit session analytics first
-      const sessionData = {
-        session_id: sessionId,
-        message_count: actualMessages.length,
-        user_message_count: userMessages.length,
-        bot_message_count: botMessages.length,
-        session_start_at: sessionStart,
-        session_end_at: sessionEnd,
-        avg_response_time_ms: null
-      };
-      
-      console.log("📊 Submitting session analytics:", sessionData);
-      await FeedbackService.updateSession(sessionData);
       
       // Submit feedback
       await onSubmit(feedbackData);
@@ -91,7 +62,8 @@ export default function FeedbackModal({
       
       // Auto close after success
       setTimeout(() => {
-        handleClose();
+        setIsSubmitted(false);
+        onClose();
       }, 2000);
     } catch (error) {
       console.error("Failed to submit feedback:", error);

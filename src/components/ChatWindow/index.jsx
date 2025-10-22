@@ -15,7 +15,12 @@ import { useState, useEffect } from "react";
 export default function ChatWindow({ closeChat, settings, sessionId }) {
   const { i18n } = useTranslation();
   const [labels, setLabels] = useState(() => getLanguageLabels(i18n.language));
-  const [showFeedback, setShowFeedback] = useState(true); // Set to true for testing/design
+  const [feedbackState, setFeedbackState] = useState({
+    showFeedback: false,
+    strategy: null,
+    handleFeedbackClose: () => {},
+    handleFeedbackSubmit: () => {}
+  });
   
   useEffect(() => {
     setLabels(getLanguageLabels(i18n.language));
@@ -33,7 +38,8 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
   const handleFeedbackSubmit = async (feedbackData) => {
     try {
       await FeedbackService.submitFeedback(feedbackData);
-      console.log("✅ Feedback submitted successfully");
+      // Call the hook's submit handler to update internal state
+      feedbackState.handleFeedbackSubmit(feedbackData);
     } catch (error) {
       console.error("❌ Failed to submit feedback:", error);
       throw error;
@@ -42,7 +48,7 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
 
   // Handle feedback modal close
   const handleFeedbackClose = () => {
-    setShowFeedback(false);
+    setFeedbackState(prev => ({ ...prev, showFeedback: false }));
   };
 
   if (loading) {
@@ -85,16 +91,17 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
           settings={settings}
           knownHistory={chatHistory}
           labels={labels}
+          onFeedbackStateChange={setFeedbackState}
         />
       </div>
       
       {/* Feedback Modal */}
       <FeedbackModal
-        isVisible={showFeedback}
+        isVisible={feedbackState.showFeedback}
         onClose={handleFeedbackClose}
         onSubmit={handleFeedbackSubmit}
         sessionId={sessionId}
-        chatHistory={chatHistory}
+        sessionData={feedbackState.sessionData}
       />
       
       {/* <div className="allm-mt-4 allm-pb-4 allm-h-fit allm-gap-y-2 allm-z-10">
