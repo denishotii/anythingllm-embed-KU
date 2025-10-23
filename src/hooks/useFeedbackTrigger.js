@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import FeedbackService from '@/models/feedbackService';
 
 const FEEDBACK_STRATEGIES = {
   OPTION1: 'option1', // 50% - 2 messages + 8s delay
@@ -66,6 +67,7 @@ const shouldTriggerOption2 = (messageCounts) => {
 export default function useFeedbackTrigger(sessionId, chatHistory, isVisible = true) {
   const [showFeedback, setShowFeedback] = useState(false);
   const [strategy, setStrategy] = useState(null);
+  const [promptType, setPromptType] = useState("POST_ANSWER");
   const [hasBeenSubmitted, setHasBeenSubmitted] = useState(false);
   const lastBotMessageTimeRef = useRef(0);
   const timerRef = useRef(null);
@@ -100,6 +102,7 @@ export default function useFeedbackTrigger(sessionId, chatHistory, isVisible = t
     // Check trigger conditions based on strategy
     if (sessionStrategy === FEEDBACK_STRATEGIES.OPTION1) {
       if (shouldTriggerOption1(messageCounts, lastBotMessageTimeRef.current)) {
+        setPromptType("INACTIVITY");
         setShowFeedback(true);
         markFeedbackAsShown();
       } else if (messageCounts.userCount >= 1 && messageCounts.botCount >= 1 && lastBotMessageTimeRef.current > 0) {
@@ -110,6 +113,7 @@ export default function useFeedbackTrigger(sessionId, chatHistory, isVisible = t
         
         if (remainingTime > 0) {
           timerRef.current = setTimeout(() => {
+            setPromptType("INACTIVITY");
             setShowFeedback(true);
             markFeedbackAsShown();
           }, remainingTime);
@@ -117,6 +121,7 @@ export default function useFeedbackTrigger(sessionId, chatHistory, isVisible = t
       }
     } else if (sessionStrategy === FEEDBACK_STRATEGIES.OPTION2) {
       if (shouldTriggerOption2(messageCounts)) {
+        setPromptType("POST_ANSWER");
         setShowFeedback(true);
         markFeedbackAsShown();
       }
@@ -151,6 +156,16 @@ export default function useFeedbackTrigger(sessionId, chatHistory, isVisible = t
     }
   }, [sessionId]);
 
+  // Handle session end (when component unmounts or session changes)
+  useEffect(() => {
+    return () => {
+      // If feedback was shown but not submitted, log as session end
+      if (showFeedback && !hasBeenSubmitted) {
+        FeedbackService.logPromptShown(sessionId, "SESSION_END", false);
+      }
+    };
+  }, [sessionId, showFeedback, hasBeenSubmitted]);
+
   // Cleanup timer on unmount
   useEffect(() => {
     return () => {
@@ -163,6 +178,7 @@ export default function useFeedbackTrigger(sessionId, chatHistory, isVisible = t
   return {
     showFeedback,
     strategy,
+    promptType,
     handleFeedbackClose,
     handleFeedbackSubmit
   };

@@ -18,8 +18,10 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
   const [feedbackState, setFeedbackState] = useState({
     showFeedback: false,
     strategy: null,
+    promptType: "POST_ANSWER",
     handleFeedbackClose: () => {},
-    handleFeedbackSubmit: () => {}
+    handleFeedbackSubmit: () => {},
+    endSession: () => {}
   });
   
   useEffect(() => {
@@ -50,6 +52,15 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
   const handleFeedbackClose = () => {
     setFeedbackState(prev => ({ ...prev, showFeedback: false }));
   };
+
+  // Cleanup: End session when chat window is closed
+  useEffect(() => {
+    return () => {
+      if (feedbackState.endSession) {
+        feedbackState.endSession();
+      }
+    };
+  }, [feedbackState.endSession]);
 
   if (loading) {
     return (
@@ -102,6 +113,7 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
         onSubmit={handleFeedbackSubmit}
         sessionId={sessionId}
         sessionData={feedbackState.sessionData}
+        promptType={feedbackState.promptType}
       />
       
       {/* <div className="allm-mt-4 allm-pb-4 allm-h-fit allm-gap-y-2 allm-z-10">

@@ -27,12 +27,13 @@ export default function ChatContainer({
   const {
     showFeedback,
     strategy,
+    promptType,
     handleFeedbackClose,
     handleFeedbackSubmit
   } = useFeedbackTrigger(sessionId, chatHistory);
 
   // Track session analytics automatically
-  const sessionData = useSessionTracking(sessionId, chatHistory);
+  const { sessionData, endSession } = useSessionTracking(sessionId, chatHistory);
 
   // Pass feedback state to parent
   useEffect(() => {
@@ -40,12 +41,14 @@ export default function ChatContainer({
       onFeedbackStateChange({
         showFeedback,
         strategy,
+        promptType,
         handleFeedbackClose,
         handleFeedbackSubmit,
-        sessionData
+        sessionData,
+        endSession
       });
     }
-  }, [showFeedback, strategy, sessionData, onFeedbackStateChange]);
+  }, [showFeedback, strategy, promptType, sessionData, endSession, onFeedbackStateChange]);
 
   // Resync history if the ref to known history changes
   // eg: cleared.

@@ -8,7 +8,8 @@ export default function FeedbackModal({
   onClose, 
   onSubmit,
   sessionId,
-  sessionData = null
+  sessionData = null,
+  promptType = "POST_ANSWER"
 }) {
   const { t } = useTranslation();
   const [rating, setRating] = useState(0);
@@ -56,7 +57,7 @@ export default function FeedbackModal({
       await onSubmit(feedbackData);
       
       // Log that user responded to feedback prompt
-      await FeedbackService.logPromptShown(sessionId, "POST_ANSWER", true);
+      await FeedbackService.logPromptShown(sessionId, promptType, true);
       
       setIsSubmitted(true);
       
@@ -75,7 +76,7 @@ export default function FeedbackModal({
 
   const handleSkip = () => {
     // Log that user skipped/dismissed the prompt
-    FeedbackService.logPromptShown(sessionId, "POST_ANSWER", false)
+    FeedbackService.logPromptShown(sessionId, promptType, false)
       .catch(err => console.warn("Failed to log skip:", err));
     handleClose();
   };
