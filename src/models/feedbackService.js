@@ -5,7 +5,7 @@
 
 const FeedbackService = {
   // API base URL - configure based on environment
-  baseUrl: import.meta.env?.VITE_FEEDBACK_API_URL || "http://localhost:8001/api/v1",
+  baseUrl: import.meta.env?.VITE_FEEDBACK_API_URL || "https://studibot.ku.de/+/api/v1",
 
   /**
    * Submit user feedback to the API
