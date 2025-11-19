@@ -6,6 +6,8 @@ import ChatContainer from "./ChatContainer";
 import Sponsor from "../Sponsor";
 import { ChatHistoryLoading } from "./ChatContainer/ChatHistory";
 import ResetChat from "../ResetChat";
+import FeedbackModal from "../FeedbackModal";
+import FeedbackService from "@/models/feedbackService";
 import { useTranslation } from "react-i18next";
 import { getLanguageLabels } from "@/utils/language";
 import { useState, useEffect } from "react";
@@ -13,9 +15,19 @@ import { useState, useEffect } from "react";
 export default function ChatWindow({ closeChat, settings, sessionId }) {
   const { i18n } = useTranslation();
   const [labels, setLabels] = useState(() => getLanguageLabels(i18n.language));
+  const [feedbackState, setFeedbackState] = useState({
+    showFeedback: false,
+    strategy: null,
+    promptType: "POST_ANSWER",
+    handleFeedbackClose: () => {},
+    handleFeedbackSubmit: () => {},
+    endSession: () => {}
+  });
+  
   useEffect(() => {
     setLabels(getLanguageLabels(i18n.language));
   }, [i18n.language]);
+  
   const { chatHistory, setChatHistory, loading } = useChatHistory(
     settings,
     sessionId
@@ -23,6 +35,32 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
 
   // Auto-reset chat if session expired due to inactivity
   useAutoReset(settings, sessionId, setChatHistory);
+
+  // Handle feedback submission
+  const handleFeedbackSubmit = async (feedbackData) => {
+    try {
+      await FeedbackService.submitFeedback(feedbackData);
+      // Call the hook's submit handler to update internal state
+      feedbackState.handleFeedbackSubmit(feedbackData);
+    } catch (error) {
+      console.error("❌ Failed to submit feedback:", error);
+      throw error;
+    }
+  };
+
+  // Handle feedback modal close
+  const handleFeedbackClose = () => {
+    setFeedbackState(prev => ({ ...prev, showFeedback: false }));
+  };
+
+  // Cleanup: End session when chat window is closed
+  useEffect(() => {
+    return () => {
+      if (feedbackState.endSession) {
+        feedbackState.endSession();
+      }
+    };
+  }, [feedbackState.endSession]);
 
   if (loading) {
     return (
@@ -47,7 +85,7 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
   setEventDelegatorForCodeSnippets();
 
   return (
-    <div className="allm-flex allm-flex-col allm-h-full">
+    <div className="allm-flex allm-flex-col allm-h-full allm-relative">
       {!settings.noHeader && (
         <ChatWindowHeader
           sessionId={sessionId}
@@ -64,8 +102,20 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
           settings={settings}
           knownHistory={chatHistory}
           labels={labels}
+          onFeedbackStateChange={setFeedbackState}
         />
       </div>
+      
+      {/* Feedback Modal */}
+      <FeedbackModal
+        isVisible={feedbackState.showFeedback}
+        onClose={handleFeedbackClose}
+        onSubmit={handleFeedbackSubmit}
+        sessionId={sessionId}
+        sessionData={feedbackState.sessionData}
+        promptType={feedbackState.promptType}
+      />
+      
       {/* <div className="allm-mt-4 allm-pb-4 allm-h-fit allm-gap-y-2 allm-z-10">
         <Sponsor settings={settings} />
         <ResetChat

@@ -7,6 +7,8 @@ import { updateSessionActivity } from "@/utils/sessionManager";
 import { getResponseForMessage } from "@/utils/greetingHandler";
 import { detectLanguage } from "@/utils/language";
 import { embedderSettings } from "@/main";
+import useFeedbackTrigger from "@/hooks/useFeedbackTrigger";
+import useSessionTracking from "@/hooks/useSessionTracking";
 export const SEND_TEXT_EVENT = "anythingllm-embed-send-prompt";
 
 export default function ChatContainer({
@@ -14,11 +16,39 @@ export default function ChatContainer({
   settings,
   knownHistory = [],
   labels,
+  onFeedbackStateChange,
 }) {
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
   const isProcessingGreetingRef = useRef(false);
+
+  // Initialize feedback trigger
+  const {
+    showFeedback,
+    strategy,
+    promptType,
+    handleFeedbackClose,
+    handleFeedbackSubmit
+  } = useFeedbackTrigger(sessionId, chatHistory);
+
+  // Track session analytics automatically
+  const { sessionData, endSession } = useSessionTracking(sessionId, chatHistory);
+
+  // Pass feedback state to parent
+  useEffect(() => {
+    if (onFeedbackStateChange) {
+      onFeedbackStateChange({
+        showFeedback,
+        strategy,
+        promptType,
+        handleFeedbackClose,
+        handleFeedbackSubmit,
+        sessionData,
+        endSession
+      });
+    }
+  }, [showFeedback, strategy, promptType, sessionData, endSession, onFeedbackStateChange]);
 
   // Resync history if the ref to known history changes
   // eg: cleared.

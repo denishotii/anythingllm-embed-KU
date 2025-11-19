@@ -84,7 +84,7 @@ export default function ChatWindowHeader({
         aria-label="Switch language"
         style={{ zIndex: 2 }}
       >
-        {lang}
+        {lang === "EN" ? "DE" : "EN"}
       </button>
       {/* Centered KU Logo */}
       <div className="allm-absolute allm-left-1/2 allm-top-1/2 allm--translate-x-1/2 allm--translate-y-1/2">
