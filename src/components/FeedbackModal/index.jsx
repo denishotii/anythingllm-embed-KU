@@ -22,7 +22,14 @@ export default function FeedbackModal({
 
   if (!isVisible && !isClosing) return null;
 
-  const handleClose = () => {
+  const handleClose = (skipLogging = false) => {
+    // If not explicitly skipping logging, log that user dismissed the prompt
+    // (This handles X button and backdrop clicks)
+    if (!skipLogging) {
+      FeedbackService.logPromptShown(sessionId, promptType, false)
+        .catch(err => console.warn("Failed to log skip:", err));
+    }
+    
     setIsClosing(true);
     setTimeout(() => {
       setIsClosing(false);
@@ -78,7 +85,8 @@ export default function FeedbackModal({
     // Log that user skipped/dismissed the prompt
     FeedbackService.logPromptShown(sessionId, promptType, false)
       .catch(err => console.warn("Failed to log skip:", err));
-    handleClose();
+    // Pass true to skipLogging since we already logged it above
+    handleClose(true);
   };
 
   // Backdrop and container

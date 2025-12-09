@@ -41,15 +41,22 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
     try {
       await FeedbackService.submitFeedback(feedbackData);
       // Call the hook's submit handler to update internal state
-      feedbackState.handleFeedbackSubmit(feedbackData);
+      if (feedbackState.handleFeedbackSubmit) {
+        feedbackState.handleFeedbackSubmit(feedbackData);
+      }
     } catch (error) {
       console.error("❌ Failed to submit feedback:", error);
       throw error;
     }
   };
 
-  // Handle feedback modal close
+  // Handle feedback modal close (skip/dismiss)
   const handleFeedbackClose = () => {
+    // Call the hook's close handler to mark feedback as skipped in localStorage
+    if (feedbackState.handleFeedbackClose) {
+      feedbackState.handleFeedbackClose();
+    }
+    // Update local state
     setFeedbackState(prev => ({ ...prev, showFeedback: false }));
   };
 
