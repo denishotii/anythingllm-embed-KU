@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import FeedbackService from '@/models/feedbackService';
 
 const FEEDBACK_STRATEGIES = {
-  OPTION1: 'option1', // 50% - 2 messages + 8s delay
+  OPTION1: 'option1', // 50% - 2 messages + 30s delay
   OPTION2: 'option2', // 30% - 3 messages + immediate
   OPTION3: 'option3'  // 20% - no feedback
 };
@@ -51,10 +51,10 @@ const countMessages = (chatHistory) => {
 };
 
 const shouldTriggerOption1 = (messageCounts, lastBotMessageTime) => {
-  // After 1 user + 1 bot message, wait 20 seconds after bot response
+  // After 1 user + 1 bot message, wait 30 seconds after bot response
   if (messageCounts.userCount >= 1 && messageCounts.botCount >= 1) {
     const timeSinceLastBotMessage = Date.now() - lastBotMessageTime;
-    return timeSinceLastBotMessage >= 20000; // 20 seconds
+    return timeSinceLastBotMessage >= 30000; // 33 seconds
   }
   return false;
 };
@@ -107,9 +107,9 @@ export default function useFeedbackTrigger(sessionId, chatHistory, isVisible = t
         markFeedbackAsShown();
       } else if (messageCounts.userCount >= 1 && messageCounts.botCount >= 1 && lastBotMessageTimeRef.current > 0) {
         // Only start timer if we have a valid bot message timestamp
-        // Set timer for 20 seconds after last bot message
+        // Set timer for 33 seconds after last bot message
         const timeSinceLastBotMessage = Date.now() - lastBotMessageTimeRef.current;
-        const remainingTime = Math.max(0, 20000 - timeSinceLastBotMessage);
+        const remainingTime = Math.max(0, 33000 - timeSinceLastBotMessage);
         
         if (remainingTime > 0) {
           timerRef.current = setTimeout(() => {
