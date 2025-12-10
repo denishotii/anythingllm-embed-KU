@@ -15,7 +15,6 @@ export default function useSessionId() {
       
       // Check if we should reset the session due to inactivity
       if (shouldResetSession(embedId)) {
-        console.log("Session expired due to inactivity, will trigger reset");
         // Clear the session ID to force a fresh start
         window.localStorage.removeItem(STORAGE_IDENTIFIER);
         updateSessionActivity(embedId);
@@ -23,14 +22,12 @@ export default function useSessionId() {
       
       const currentId = window.localStorage.getItem(STORAGE_IDENTIFIER);
       if (!!currentId) {
-        console.log(`Resuming session id`, currentId);
         updateSessionActivity(embedId); // Update activity timestamp
         setSessionId(currentId);
         return;
       }
 
       const newId = v4();
-      console.log(`Registering new session id`, newId);
       window.localStorage.setItem(STORAGE_IDENTIFIER, newId);
       updateSessionActivity(embedId);
       setSessionId(newId);

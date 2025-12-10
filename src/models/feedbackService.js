@@ -20,8 +20,6 @@ const FeedbackService = {
    */
   async submitFeedback(feedbackData) {
     try {
-      console.log("📤 Submitting feedback:", feedbackData);
-
       const response = await fetch(`${this.baseUrl}/feedback`, {
         method: "POST",
         headers: {
@@ -38,7 +36,6 @@ const FeedbackService = {
       }
 
       const result = await response.json();
-      console.log("✅ Feedback submitted successfully:", result);
       return result;
     } catch (error) {
       console.error("❌ Error submitting feedback:", error);

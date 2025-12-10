@@ -9,7 +9,6 @@ export function updateSessionActivity(embedId) {
   const activityKey = `${SESSION_LAST_ACTIVITY}_${embedId}`;
   const now = Date.now();
   localStorage.setItem(activityKey, now.toString());
-  console.log(`Session activity updated for ${embedId} at ${new Date(now).toISOString()}`);
 }
 
 export function shouldResetSession(embedId) {
@@ -26,11 +25,8 @@ export function shouldResetSession(embedId) {
   const now = Date.now();
   const hoursSinceLastActivity = (now - lastActivityTime) / (1000 * 60 * 60);
   
-  console.log(`Session check for ${embedId}: ${hoursSinceLastActivity.toFixed(2)} hours since last activity`);
-  
   // Reset if more than 1 hour has passed
   if (hoursSinceLastActivity >= SESSION_TIMEOUT_HOURS) {
-    console.log(`Session expired for ${embedId}, will reset`);
     // Clear the activity timestamp to force a fresh start
     localStorage.removeItem(activityKey);
     return true;
@@ -50,5 +46,4 @@ export function manuallyExpireSession(embedId) {
   // Set activity to 2 hours ago to force expiration
   const twoHoursAgo = Date.now() - (2 * 60 * 60 * 1000);
   localStorage.setItem(activityKey, twoHoursAgo.toString());
-  console.log(`Manually expired session for ${embedId}`);
 } 
