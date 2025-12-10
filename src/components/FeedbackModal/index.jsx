@@ -19,8 +19,10 @@ export default function FeedbackModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  if (!isVisible && !isClosing) return null;
+  // Keep modal visible if submitted (to show success message) even if parent wants to close
+  if (!isVisible && !isClosing && !isSubmitted && !showSuccess) return null;
 
   const handleClose = (skipLogging = false) => {
     // If not explicitly skipping logging, log that user dismissed the prompt
@@ -66,13 +68,25 @@ export default function FeedbackModal({
       // Log that user responded to feedback prompt
       await FeedbackService.logPromptShown(sessionId, promptType, true);
       
+      // Mark as submitted and hide form
       setIsSubmitted(true);
       
-      // Auto close after success
+      // Small delay to ensure form is hidden, then show success message
       setTimeout(() => {
-        setIsSubmitted(false);
-        onClose();
-      }, 2000);
+        setShowSuccess(true);
+        
+        // Show success message for 2 seconds, then close
+        setTimeout(() => {
+          setIsClosing(true);
+          // Close after fade out animation
+          setTimeout(() => {
+            setIsClosing(false);
+            setIsSubmitted(false);
+            setShowSuccess(false);
+            onClose();
+          }, 300);
+        }, 2000);
+      }, 150);
     } catch (error) {
       console.error("Failed to submit feedback:", error);
       alert(t("feedback.alert-error"));
@@ -122,32 +136,52 @@ export default function FeedbackModal({
     transition: 'all 0.3s ease'
   };
 
-  if (isSubmitted) {
-    return (
-      <>
-        <div style={backdropStyle} onClick={handleClose} />
-        <div style={modalStyle}>
-          <div className="allm-w-16 allm-h-16 allm-mx-auto allm-mb-4 allm-rounded-full allm-flex allm-items-center allm-justify-center" 
-               style={{ backgroundColor: '#003366' }}>
-            <svg className="allm-w-8 allm-h-8 allm-text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <h3 className="allm-text-lg allm-font-semibold allm-mb-2" style={{ color: '#222', letterSpacing: '0.3px' }}>
-            {t("feedback.success-title")}
-          </h3>
-          <p className="allm-text-sm" style={{ color: '#666', letterSpacing: '0.3px' }}>
-            {t("feedback.success-message")}
-          </p>
-        </div>
-      </>
-    );
-  }
+  // Form content style - fades out when submitted
+  const formContentStyle = {
+    opacity: isSubmitted ? 0 : 1,
+    transform: isSubmitted ? 'translateY(-10px) scale(0.95)' : 'translateY(0) scale(1)',
+    transition: 'all 0.3s ease',
+    pointerEvents: isSubmitted ? 'none' : 'auto',
+    position: isSubmitted ? 'absolute' : 'relative',
+    width: '100%',
+    visibility: isSubmitted ? 'hidden' : 'visible'
+  };
+
+  // Success content style - fades in when showSuccess is true
+  const successContentStyle = {
+    opacity: showSuccess ? 1 : 0,
+    transform: showSuccess ? 'translateY(0) scale(1)' : 'translateY(10px) scale(0.95)',
+    transition: 'all 0.3s ease',
+    pointerEvents: showSuccess ? 'auto' : 'none',
+    position: showSuccess ? 'relative' : 'absolute',
+    width: '100%',
+    visibility: showSuccess ? 'visible' : 'hidden'
+  };
 
   return (
     <>
       <div style={backdropStyle} onClick={handleClose} />
       <div style={modalStyle}>
+        {/* Success Message - fades in after submission */}
+        {showSuccess && (
+          <div style={successContentStyle}>
+            <div className="allm-w-16 allm-h-16 allm-mx-auto allm-mb-4 allm-rounded-full allm-flex allm-items-center allm-justify-center" 
+                 style={{ backgroundColor: '#003366' }}>
+              <svg className="allm-w-8 allm-h-8 allm-text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="allm-text-lg allm-font-semibold allm-mb-2" style={{ color: '#222', letterSpacing: '0.3px' }}>
+              {t("feedback.success-title")}
+            </h3>
+            <p className="allm-text-sm" style={{ color: '#666', letterSpacing: '0.3px' }}>
+              {t("feedback.success-message")}
+            </p>
+          </div>
+        )}
+        
+        {/* Form Content - fades out when submitted */}
+        <div style={formContentStyle}>
         {/* Header */}
         <div className="allm-relative" style={{ marginBottom: '16px' }}>
           <button
@@ -417,7 +451,9 @@ export default function FeedbackModal({
           )}
         </button>
       </div>
-    </div>
+        </div>
+        {/* End Form Content */}
+      </div>
     </>
   );
 }
