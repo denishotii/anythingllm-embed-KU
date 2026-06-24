@@ -3,7 +3,13 @@
  * Handles communication with the StudiBot Feedback API
  */
 
+// Temporary backend-outage switch; set VITE_FEEDBACK_COLLECTION_ENABLED=true to restore collection.
+const FEEDBACK_COLLECTION_ENABLED =
+  import.meta.env?.VITE_FEEDBACK_COLLECTION_ENABLED === "true";
+
 const FeedbackService = {
+  isEnabled: FEEDBACK_COLLECTION_ENABLED,
+
   // API base URL - configure based on environment
   baseUrl: import.meta.env?.VITE_FEEDBACK_API_URL || "https://studibot.ku.de/+/api/v1",
 
@@ -19,6 +25,8 @@ const FeedbackService = {
    * @returns {Promise} - API response
    */
   async submitFeedback(feedbackData) {
+    if (!this.isEnabled) return null;
+
     try {
       const response = await fetch(`${this.baseUrl}/feedback`, {
         method: "POST",
@@ -51,6 +59,8 @@ const FeedbackService = {
    * @returns {Promise} - API response
    */
   async logPromptShown(sessionId, promptType = "POST_ANSWER", wasResponded = false) {
+    if (!this.isEnabled) return null;
+
     try {
       const response = await fetch(`${this.baseUrl}/prompt`, {
         method: "POST",
@@ -82,6 +92,8 @@ const FeedbackService = {
    * @returns {Promise} - API response
    */
   async updateSession(sessionData) {
+    if (!this.isEnabled) return null;
+
     try {
       const response = await fetch(`${this.baseUrl}/session`, {
         method: "POST",
@@ -108,6 +120,8 @@ const FeedbackService = {
    * @returns {Promise<boolean>} - true if API is healthy
    */
   async checkHealth() {
+    if (!this.isEnabled) return false;
+
     try {
       const response = await fetch(`${this.baseUrl.replace('/api/v1', '')}/health`);
       const data = await response.json();
@@ -120,4 +134,3 @@ const FeedbackService = {
 };
 
 export default FeedbackService;
-
