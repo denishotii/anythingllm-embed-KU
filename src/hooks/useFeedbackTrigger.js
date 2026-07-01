@@ -73,16 +73,6 @@ export default function useFeedbackTrigger(sessionId, chatHistory, isVisible = t
   const timerRef = useRef(null);
 
   useEffect(() => {
-    if (!FeedbackService.isEnabled) {
-      setStrategy(null);
-      setShowFeedback(false);
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-      return;
-    }
-
     if (!sessionId || !isVisible || hasBeenSubmitted) return;
 
     // Get or generate strategy for this session
