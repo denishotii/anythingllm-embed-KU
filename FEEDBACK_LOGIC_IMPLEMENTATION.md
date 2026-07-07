@@ -7,14 +7,19 @@ This document outlines the implementation strategy for the randomized feedback s
 
 ### Three Random Options (Weighted Probabilities):
 
+> **Key principle:** all timing is anchored to the moment the bot's answer has
+> **fully rendered** (streaming/typing finished), never to when the user sent the
+> prompt. The feedback modal is therefore never shown over an answer that is still
+> being written.
+
 1. **Option 1 (50% chance)**: 
-   - **Trigger**: After 2 messages (1 user + 1 bot)
-   - **Timing**: Wait 20 seconds after bot's response
+   - **Trigger**: After 1 user + 1 bot message, once the answer has fully rendered
+   - **Timing**: Wait 30 seconds after the answer finishes (INACTIVITY)
    - **Purpose**: Capture quick interactions and immediate feedback
 
 2. **Option 2 (30% chance)**:
-   - **Trigger**: After 3 messages (User → Bot → User → Show feedback while bot responds)
-   - **Timing**: Show immediately while bot is still generating response
+   - **Trigger**: After the user's 2nd question has been answered (2 user + 2 bot messages), once that answer has fully rendered
+   - **Timing**: Show 5 seconds after the answer finishes (POST_ANSWER)
    - **Purpose**: Capture feedback from more engaged users during longer conversations
 
 3. **Option 3 (20% chance)**:
@@ -40,9 +45,11 @@ Monitor Messages in Real-time
 ↓
 Check if Strategy Conditions Met
 ↓
-Execute Timing Logic:
-  - Option 1: 20 seconds after bot response
-  - Option 2: Immediately after 3rd message
+Wait Until Answer Has Fully Rendered
+↓
+Execute Timing Logic (measured from answer completion):
+  - Option 1: 30 seconds after the answer finishes
+  - Option 2: 5 seconds after the answer finishes
   - Option 3: Never trigger
 ↓
 Show Feedback Modal
@@ -66,8 +73,9 @@ Never Show Again for This Session
 - Monitors chat history changes in real-time
 
 ### 3. Timer Management
-- Handles 8-second delay for Option 1
-- Manages immediate triggers for Option 2
+- Detects answer completion via the `pending`/`animate` message flags
+- Arms the 30s (Option 1) / 5s (Option 2) delay from the completion moment
+- Re-arms from the newest answer if the user sends a follow-up while waiting
 - Cleans up timers on component unmount
 
 ### 4. Strategy Storage
@@ -106,8 +114,8 @@ const getFeedbackStrategy = (sessionId) => {
 - Track message sequence for trigger conditions
 
 ### Timing Implementation
-- **Option 1**: Set 8-second timer after bot response
-- **Option 2**: Show immediately when 3rd message condition met
+- **Option 1**: Set 30-second timer after the answer has fully rendered
+- **Option 2**: Set 5-second timer after the answer has fully rendered
 - **Option 3**: No timer, no trigger
 
 ## Benefits

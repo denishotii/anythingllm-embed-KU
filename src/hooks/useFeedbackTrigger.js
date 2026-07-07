@@ -2,10 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 import FeedbackService from '@/models/feedbackService';
 
 const FEEDBACK_STRATEGIES = {
-  OPTION1: 'option1', // 50% - 2 messages + 30s delay
-  OPTION2: 'option2', // 30% - 3 messages + immediate
-  OPTION3: 'option3'  // 20% - no feedback
+  OPTION1: 'option1', // 50% - INACTIVITY: show 30s after the answer has fully rendered
+  OPTION2: 'option2', // 30% - POST_ANSWER: show shortly after the answer has fully rendered
+  OPTION3: 'option3'  // 20% - never show feedback
 };
+
+// Delays are measured from the moment the bot's answer has FULLY rendered
+// (i.e. streaming/typing finished), never from when the user sent the prompt.
+const INACTIVITY_DELAY_MS = 30000; // Option 1
+const POST_ANSWER_DELAY_MS = 5000; // Option 2
 
 const getFeedbackStrategy = (sessionId) => {
   // Check if already shown to this session
@@ -24,7 +29,7 @@ const getFeedbackStrategy = (sessionId) => {
   // Generate new random strategy
   const random = Math.random();
   let strategy = null;
-  
+
   if (random < 0.50) {
     strategy = FEEDBACK_STRATEGIES.OPTION1; // 50%
   } else if (random < 0.80) {
@@ -38,30 +43,33 @@ const getFeedbackStrategy = (sessionId) => {
   return strategy;
 };
 
+/**
+ * A message counts as a fully-rendered assistant answer only when it is no
+ * longer a placeholder (`pending`) and no longer streaming/typing (`animate`).
+ * This is true both for streamed replies (flags set by handleChat once the
+ * stream closes) and for instant greeting replies (which carry neither flag).
+ */
+const isCompletedAssistantMessage = (msg) =>
+  !!msg &&
+  msg.role === 'assistant' &&
+  !msg.pending &&
+  !msg.animate &&
+  (!!msg.error || (typeof msg.content === 'string' && msg.content.trim().length > 0));
+
 const countMessages = (chatHistory) => {
-  const actualMessages = chatHistory.filter(msg => !msg.pending);
-  const userMessages = actualMessages.filter(msg => msg.role === "user");
-  const botMessages = actualMessages.filter(msg => msg.role === "assistant");
-  
-  return {
-    userCount: userMessages.length,
-    botCount: botMessages.length,
-    totalCount: actualMessages.length
-  };
+  const userCount = chatHistory.filter(
+    (msg) => msg.role === 'user' && !msg.pending
+  ).length;
+  const botCount = chatHistory.filter(isCompletedAssistantMessage).length;
+
+  return { userCount, botCount };
 };
 
-const shouldTriggerOption1 = (messageCounts, lastBotMessageTime) => {
-  // After 1 user + 1 bot message, wait 30 seconds after bot response
-  if (messageCounts.userCount >= 1 && messageCounts.botCount >= 1) {
-    const timeSinceLastBotMessage = Date.now() - lastBotMessageTime;
-    return timeSinceLastBotMessage >= 30000; // 33 seconds
+const findLastAssistantIndex = (chatHistory) => {
+  for (let i = chatHistory.length - 1; i >= 0; i--) {
+    if (chatHistory[i]?.role === 'assistant') return i;
   }
-  return false;
-};
-
-const shouldTriggerOption2 = (messageCounts) => {
-  // After 2 user + 1 bot message, trigger immediately
-  return messageCounts.userCount >= 2 && messageCounts.botCount >= 1;
+  return -1;
 };
 
 export default function useFeedbackTrigger(sessionId, chatHistory, isVisible = true) {
@@ -69,8 +77,22 @@ export default function useFeedbackTrigger(sessionId, chatHistory, isVisible = t
   const [strategy, setStrategy] = useState(null);
   const [promptType, setPromptType] = useState("POST_ANSWER");
   const [hasBeenSubmitted, setHasBeenSubmitted] = useState(false);
-  const lastBotMessageTimeRef = useRef(0);
   const timerRef = useRef(null);
+  // Tracks the answer we last saw complete, so its completion timestamp is
+  // stamped exactly once (chat history re-renders on every streamed chunk).
+  const completionRef = useRef({ index: -1, at: 0 });
+
+  const clearTimer = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  const markFeedbackAsShown = () => {
+    const sessionKey = `feedback_shown_${sessionId}`;
+    localStorage.setItem(sessionKey, 'true');
+  };
 
   useEffect(() => {
     if (!sessionId || !isVisible || hasBeenSubmitted) return;
@@ -84,55 +106,64 @@ export default function useFeedbackTrigger(sessionId, chatHistory, isVisible = t
       return;
     }
 
+    // Any pending arm is recomputed from the current state below.
+    clearTimer();
+
+    // Only ever prompt once the latest assistant answer has fully rendered, so
+    // the modal can never cover an answer that is still being written.
+    const lastAssistantIndex = findLastAssistantIndex(chatHistory);
+    const lastAssistant =
+      lastAssistantIndex === -1 ? null : chatHistory[lastAssistantIndex];
+
+    if (!isCompletedAssistantMessage(lastAssistant)) {
+      // A new answer is being generated (or none yet) — wait for it to finish.
+      completionRef.current = { index: -1, at: 0 };
+      return;
+    }
+
+    // Stamp the completion time once per answer (keyed by its position).
+    if (completionRef.current.index !== lastAssistantIndex) {
+      completionRef.current = { index: lastAssistantIndex, at: Date.now() };
+    }
+    const completedAt = completionRef.current.at;
+
+    // Decide, per strategy, whether the conversation qualifies and how long to
+    // wait after the answer finished before showing the prompt.
     const messageCounts = countMessages(chatHistory);
+    let delayMs = null;
+    let type = null;
 
-    // Clear existing timer
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
+    if (
+      sessionStrategy === FEEDBACK_STRATEGIES.OPTION1 &&
+      messageCounts.userCount >= 1 &&
+      messageCounts.botCount >= 1
+    ) {
+      delayMs = INACTIVITY_DELAY_MS;
+      type = "INACTIVITY";
+    } else if (
+      sessionStrategy === FEEDBACK_STRATEGIES.OPTION2 &&
+      messageCounts.userCount >= 2 &&
+      messageCounts.botCount >= 1
+    ) {
+      delayMs = POST_ANSWER_DELAY_MS;
+      type = "POST_ANSWER";
     }
 
-    // Track last bot message time - only for completed messages (not pending)
-    const actualMessages = chatHistory.filter(msg => !msg.pending && msg.role === "assistant");
-    const lastBotMessage = actualMessages.pop();
-    if (lastBotMessage && lastBotMessage.sentAt) {
-      lastBotMessageTimeRef.current = lastBotMessage.sentAt * 1000;
-    }
+    if (delayMs === null) return;
 
-    // Check trigger conditions based on strategy
-    if (sessionStrategy === FEEDBACK_STRATEGIES.OPTION1) {
-      if (shouldTriggerOption1(messageCounts, lastBotMessageTimeRef.current)) {
-        setPromptType("INACTIVITY");
-        setShowFeedback(true);
-        markFeedbackAsShown();
-      } else if (messageCounts.userCount >= 1 && messageCounts.botCount >= 1 && lastBotMessageTimeRef.current > 0) {
-        // Only start timer if we have a valid bot message timestamp
-        // Set timer for 33 seconds after last bot message
-        const timeSinceLastBotMessage = Date.now() - lastBotMessageTimeRef.current;
-        const remainingTime = Math.max(0, 33000 - timeSinceLastBotMessage);
-        
-        if (remainingTime > 0) {
-          timerRef.current = setTimeout(() => {
-            setPromptType("INACTIVITY");
-            setShowFeedback(true);
-            markFeedbackAsShown();
-          }, remainingTime);
-        }
-      }
-    } else if (sessionStrategy === FEEDBACK_STRATEGIES.OPTION2) {
-      if (shouldTriggerOption2(messageCounts)) {
-        setPromptType("POST_ANSWER");
-        setShowFeedback(true);
-        markFeedbackAsShown();
-      }
-    }
+    const remaining = Math.max(0, delayMs - (Date.now() - completedAt));
+    const trigger = () => {
+      setPromptType(type);
+      setShowFeedback(true);
+      markFeedbackAsShown();
+    };
 
+    if (remaining === 0) {
+      trigger();
+    } else {
+      timerRef.current = setTimeout(trigger, remaining);
+    }
   }, [sessionId, chatHistory, isVisible, hasBeenSubmitted]);
-
-  const markFeedbackAsShown = () => {
-    const sessionKey = `feedback_shown_${sessionId}`;
-    localStorage.setItem(sessionKey, 'true');
-  };
 
   const handleFeedbackClose = () => {
     setShowFeedback(false);
@@ -150,10 +181,8 @@ export default function useFeedbackTrigger(sessionId, chatHistory, isVisible = t
   useEffect(() => {
     setHasBeenSubmitted(false);
     setShowFeedback(false);
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
+    completionRef.current = { index: -1, at: 0 };
+    clearTimer();
   }, [sessionId]);
 
   // Handle session end (when component unmounts or session changes)
@@ -169,9 +198,7 @@ export default function useFeedbackTrigger(sessionId, chatHistory, isVisible = t
   // Cleanup timer on unmount
   useEffect(() => {
     return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
+      clearTimer();
     };
   }, []);
 
